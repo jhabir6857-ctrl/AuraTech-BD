@@ -2,8 +2,25 @@ import styles from './ProductGrid.module.css';
 import { prisma } from '@/lib/prisma';
 import AddToCartButton from './AddToCartButton';
 
+const defaultProducts = [
+  { id: 1, name: 'AuraWatch Ultra', price: '৳ 32,500', tag: 'Bestseller', image: '⌚' },
+  { id: 2, name: 'AuraBook Pro 14"', price: '৳ 145,000', tag: 'New', image: '💻' },
+  { id: 3, name: 'Wireless Charging Pad', price: '৳ 2,500', tag: '', image: '🔋' },
+  { id: 4, name: 'Smart Home Hub', price: '৳ 8,900', tag: '', image: '🏠' },
+];
+
 export default async function ProductGrid() {
-  const products = await prisma.product.findMany();
+  let products = defaultProducts;
+  
+  try {
+    const dbProducts = await prisma.product.findMany();
+    if (dbProducts.length > 0) {
+      products = dbProducts;
+    }
+  } catch (error) {
+    console.error('Failed to fetch products from database:', error);
+    // Use default products as fallback
+  }
 
   return (
     <section className={styles.productSection} id="products">
